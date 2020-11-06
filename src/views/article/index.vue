@@ -217,7 +217,7 @@ export default {
         deleteArticle(id.toString()).then(res => {
           // 删除成功，更新当前页的数据列表
           this.loadArticles(this.page)
-          console.log('成功')
+          // console.log('成功');
         })
       }).catch(() => {
         this.$message({
