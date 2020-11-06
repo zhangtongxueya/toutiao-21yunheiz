@@ -1,15 +1,18 @@
 <template>
   <el-container class="layout-container">
-    <el-aside width="200px" class="aside">
+    <el-aside class="aside" width="auto">
       <!-- 侧边栏导航 -->
-      <app-aside class="aside-menu" />
+      <app-aside class="aside-menu" :is-collapse='isCollapse' />
     </el-aside>
     <el-container>
+      <!-- 顶部菜单栏 -->
       <el-header class="header">
         <!-- 顶部左侧 -->
         <div>
           <!-- 展开收起图标 -->
-          <i class="el-icon-s-fold"></i>
+          <!-- class样式处理 {css类名：布尔值} true-作用类名；false-不作用类名 -->
+          <i :class="{'el-icon-s-unfold': isCollapse, 'el-icon-s-fold': !isCollapse}"
+            @click="isCollapse=!isCollapse"></i>
           <span>小张头条号内容发布系统</span>
         </div>
         <!-- 顶部右侧--用户 -->
@@ -23,7 +26,9 @@
           </div>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item icon="el-icon-plus">设置</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-circle-plus">退出</el-dropdown-item>
+            <!-- 组件默认不识别原生事件,除非内部做了处理 -->
+            <!-- 但是事件之后 + native 可以识别(详情见 vue 文档) -->
+            <el-dropdown-item icon="el-icon-close" @click.native="onLogout">退出</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </el-header>
@@ -44,7 +49,8 @@ import {
 export default {
   data () {
     return {
-      user: ''
+      user: {},
+      isCollapse: false // 子组件中侧边菜单栏的展开和收起
     }
   },
   components: {
@@ -61,6 +67,25 @@ export default {
     loadUserProfile () {
       getUserProfile().then(res => {
         this.user = res.data.data
+        console.log(this.u)
+      })
+    },
+    // 用户退出功能实现
+    onLogout () {
+      this.$confirm('确定退出登录吗?', '提示退出', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 把用户的登录状态清除
+        window.localStorage.removeItem('user')
+        // 跳转login 页面
+        this.$router.push('/login')
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消退出'
+        })
       })
     }
   }

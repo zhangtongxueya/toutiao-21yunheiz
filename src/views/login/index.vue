@@ -33,43 +33,57 @@
 <script>
 // import request from '@/utils/requert'  请求统一在 api/user 中管理,所以这里不需要了
 
-import { login } from '@/api/user'
+import {
+  login
+} from '@/api/user'
 
 export default {
   name: 'LoginIndex',
   data () {
     return {
       user: {
-        mobile: '', // 手机号
-        code: '', // 验证码
+        mobile: '13911111111', // 手机号
+        code: '246810', // 验证码
         agree: false // 是否同意协议
       },
       loginLoading: false, // 登录的 loading 状态
       formRules: { // 表单验证规则配置
-        mobile: [
-          { required: true, message: '手机号不能为空', trigger: 'change' },
-          { pattern: /^1[3|5|7|8|9]\d{9}$/, message: '请输入正确的号码格式', trigger: 'change' }
+        mobile: [{
+          required: true,
+          message: '手机号不能为空',
+          trigger: 'blur'
+        },
+        {
+          pattern: /^1[3|5|7|8|9]\d{9}$/,
+          message: '请输入正确的号码格式',
+          trigger: 'blur'
+        }
         ],
-        code: [
-          { required: true, message: '验证码不能为空', trigger: 'change' },
-          { pattern: /^\d{6}$/, message: '请输入正确的验证码格式', trigger: 'change' }
+        code: [{
+          required: true,
+          message: '验证码不能为空',
+          trigger: 'blur'
+        },
+        {
+          pattern: /^\d{6}$/,
+          message: '请输入正确的验证码格式',
+          trigger: 'blur'
+        }
         ],
-        agree: [
-          {
-            // 自定义校验规则
-            // 通过验证: callback()
-            // 验证失败: callback(new Error("错误消息"))
-            validator: (rule, value, callback) => {
-              // console.log(value)
-              if (value) {
-                callback()
-              } else {
-                callback(new Error('请同意用户协议'))
-              }
-            },
-            trigger: 'change'
-          }
-        ]
+        agree: [{
+          // 自定义校验规则
+          // 通过验证: callback()
+          // 验证失败: callback(new Error("错误消息"))
+          validator: (rule, value, callback) => {
+            // console.log(value)
+            if (value) {
+              callback()
+            } else {
+              callback(new Error('请同意用户协议'))
+            }
+          },
+          trigger: 'change'
+        }]
       }
     }
   },
@@ -105,13 +119,18 @@ export default {
       // 好处: 管理.维护更方便,也好重用 (api/user.js)
       login(this.user).then(res => { // this.user 就是传到 api/user 中的data
         // 登录成功
-        console.log(res)
+        // console.log(res)
         this.$message({
           message: '登录成功',
           type: 'success'
         })
         // 登录成功或者失败都要关闭 loading...
         this.loginLoading = false
+
+        // 将接口返回的用户数据放到本地存储，方便应用 数据 共享
+        // 本地存储只能存储字符串，如果存储对象，数组之类的数据，需要转成 JSON 格式字符串存储
+        window.localStorage.setItem('user', JSON.stringify(res.data.data))
+
         // 跳转首页
         // this.$router.push('/')
         this.$router.push({
@@ -128,33 +147,38 @@ export default {
     }
   }
 }
+
 </script>
 <style scoped lang="less">
-.login-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: url("./login_bg.jpg") no-repeat;
-  background-size: cover;
-  .login-head{
-    width: 300px;
-    height: 57px;
-    margin-bottom: 20px;
-    background: url("./logo_index.png") no-repeat;
-  }
-  .login-from{
-    background-color: #fff;
-    padding: 50px;
-    min-width: 300px;
-    .login-btn{
-      width: 100%;
+  .login-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: url("./login_bg.jpg") no-repeat;
+    background-size: cover;
+
+    .login-head {
+      width: 300px;
+      height: 57px;
+      margin-bottom: 20px;
+      background: url("./logo_index.png") no-repeat;
+    }
+
+    .login-from {
+      background-color: #fff;
+      padding: 50px;
+      min-width: 300px;
+
+      .login-btn {
+        width: 100%;
+      }
     }
   }
-}
+
 </style>

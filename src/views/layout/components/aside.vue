@@ -1,5 +1,5 @@
 <template>
-  <el-menu default-active="/" class="menu" text-color="#fff" active-text-color="#ffd04b" router>
+  <el-menu default-active="/" class="menu" text-color="#fff" active-text-color="#ffd04b" :collapse="isCollapse" router>
     <el-menu-item index="/">
       <i class="el-icon-setting"></i>
       <span slot="title">首页</span>
@@ -34,8 +34,11 @@
 <script>
 export default {
   name: 'AppAside',
+  props: ['is-collapse'],
   data () {
-    return {}
+    return {
+      // isCollapse: true  使用的是父子间传递过来的数据，这里的就没有意义了
+    }
   },
   methods: {
 
