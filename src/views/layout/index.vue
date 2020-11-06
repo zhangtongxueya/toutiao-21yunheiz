@@ -67,7 +67,6 @@ export default {
     loadUserProfile () {
       getUserProfile().then(res => {
         this.user = res.data.data
-        console.log(this.u)
       })
     },
     // 用户退出功能实现

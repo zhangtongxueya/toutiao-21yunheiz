@@ -85,17 +85,17 @@
         </el-table-column>
         <el-table-column label="操作">
           <!-- 如果需要自定义模板,那么就把自定义的内容放到 template 中 -->
-          <template>
+          <template slot-scope="scope">
             <el-button size="mini" type="primary" circle icon="el-icon-edit"></el-button>
-            <el-button size="mini" type="danger" circle icon="el-icon-delete" @click="onDeleteArticle">
+            <el-button size="mini" type="danger" circle icon="el-icon-delete" @click="onDeleteArticle(scope.row.id)">
             </el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <!-- 列表分页 -->
-      <el-pagination class="page" @current-change="onCurrentChange" :page-size="pageSize" layout="prev, pager, next"
-        :total="totalCount" :disabled="loading">
+      <el-pagination class="page" layout="prev, pager, next" @current-change="onCurrentChange" :current-page.sync="page"
+        :page-size="pageSize" :total="totalCount" :disabled="loading">
       </el-pagination>
     </el-card>
   </div>
@@ -104,7 +104,8 @@
 <script>
 import {
   getArticle,
-  getArticleChannels
+  getArticleChannels,
+  deleteArticle
 } from '@/api/article'
 
 export default {
@@ -155,7 +156,8 @@ export default {
       articleChannels: '', // 文章频道
       channelId: null, // 根据频道 id 查询的数据
       rangeDtate: null, // 时间 筛选的条件 (时间组件自带清空，清空就是null，代表全部)
-      loading: true // 加载中
+      loading: true, // 加载中
+      page: 1 // 文章的当前页
     }
   },
   created () {
@@ -204,8 +206,25 @@ export default {
       })
     },
     // 删除文章
-    onDeleteArticle () {
-      console.log('删除')
+    onDeleteArticle (id) {
+      console.log(id)
+      console.log(id.toString())
+      this.$confirm('确定删除吗?', '删除退出', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteArticle(id.toString()).then(res => {
+          // 删除成功，更新当前页的数据列表
+          this.loadArticles(this.page)
+          console.log('成功')
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     }
   }
 }

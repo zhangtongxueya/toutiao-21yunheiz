@@ -21,9 +21,9 @@ export const getArticleChannels = () => {
 }
 
 // 删除选中的文章
-export const deleteArticle = () => {
+export const deleteArticle = articleId => {
   return request({
     method: 'DELETE',
-    url: '/mp/v1_0/articles/:target'
+    url: `/mp/v1_0/articles/${articleId}`
   })
 }
