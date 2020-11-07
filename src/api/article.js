@@ -27,3 +27,17 @@ export const deleteArticle = articleId => {
     url: `/mp/v1_0/articles/${articleId}`
   })
 }
+
+// 发布新的的文章
+// draft：不传，默认为false
+export const addArticle = (data, draft = false) => {
+  return request({
+    method: 'POST',
+    url: '/mp/v1_0/articles',
+    params: {
+      // 接收 query 参数
+      draft // 是否存为草稿
+    },
+    data // 接收 body 参数
+  })
+}
