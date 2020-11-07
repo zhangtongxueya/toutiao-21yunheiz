@@ -41,3 +41,24 @@ export const addArticle = (data, draft = false) => {
     data // 接收 body 参数
   })
 }
+
+// 获取指定文章
+export const appointArticle = articleId => {
+  return request({
+    method: 'GET',
+    url: `/mp/v1_0/articles/${articleId}`
+  })
+}
+
+// 编辑文章/修改文章
+export const updateArticle = (articleId, data, draft = false) => {
+  return request({
+    method: 'PUT',
+    url: `/mp/v1_0/articles/${articleId}`,
+    params: {
+      // 接收 query 参数
+      draft // 是否存为草稿
+    },
+    data // 接收 body 参数
+  })
+}

@@ -86,8 +86,11 @@
         <el-table-column label="操作">
           <!-- 如果需要自定义模板,那么就把自定义的内容放到 template 中 -->
           <template slot-scope="scope">
-            <el-button size="mini" type="primary" circle icon="el-icon-edit"></el-button>
-            <el-button size="mini" type="danger" circle icon="el-icon-delete" @click="onDeleteArticle(scope.row.id)">
+            <el-button size="mini" type="primary" circle icon="el-icon-edit"
+              @click="$router.push('/publish?id='+scope.row.id)">
+            </el-button>
+            <el-button size="mini" type="danger" circle icon="el-icon-delete"
+              @click="onDeleteArticle(scope.row.id.toString())">
             </el-button>
           </template>
         </el-table-column>

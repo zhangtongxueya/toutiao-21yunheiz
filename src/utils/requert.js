@@ -31,6 +31,7 @@ request.interceptors.request.use(
   // 所有请求会经过这里
   // config 是当前请求相关的配置信息对象，config 是可以修改的
   function (config) {
+    // console.log(config);
     // 在拦截器中获取本地存储的数据
     const user = JSON.parse(window.localStorage.getItem('user'))
     // 如果有用户登录信息，则统一设置 token
