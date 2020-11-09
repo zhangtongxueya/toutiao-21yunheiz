@@ -202,7 +202,7 @@ export default {
           // 验证失败
           return
         }
-        验证通过
+        // 验证通过
         if (this.$route.query.id) {
           updateArticle(this.$route.query.id, this.article, draft).then(res => {
             console.log(res)

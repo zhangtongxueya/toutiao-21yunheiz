@@ -14,13 +14,26 @@
           <el-radio-button :label="true">收藏</el-radio-button>
         </el-radio-group>
         <!-- 上传素材 -->
-        <el-button size="mini" type="success">操作按钮</el-button>
+        <el-button size="mini" type="success" @click="dialogUploadVisible = true">上传素材</el-button>
       </div>
       <el-row :gutter="30">
         <el-col v-for="(item, id) in images" :key="id" :xs="12" :sm="6" :md="6" :lg="4" class="list">
           <el-image style="height: 100px" :src="item.url" fit="cover"></el-image>
         </el-col>
       </el-row>
+      <!-- 上传文件的对话框 -->
+      <el-dialog title="上传素材" :visible.sync="dialogUploadVisible" :append-to-body="true">
+        <!--
+           用 upload 组件： 本身就支持请求-提交上传操作，使用它不需要自己去发请求，他自己会发;
+           1 默认是:POST  2.请求路径:action: 完成路径   3. 请求头:
+         -->
+        <el-upload class="upload-demo" drag action="http://ttapi.research.itcast.cn/mp/v1_0/user/images"
+          :headers="uploadHeaders" :on-success="onUploadSuccess" name="image" multiple>
+          <i class="el-icon-upload"></i>
+          <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+          <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+        </el-upload>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -34,9 +47,15 @@ import {
 export default {
   name: 'ImageIndex',
   data () {
+    // 获取本地存储的数据
+    const user = JSON.parse(window.localStorage.getItem('user'))
     return {
       collect: false, // 默认查询全部的素材
-      images: [] // 图片的数据
+      images: [], // 图片的数据
+      dialogUploadVisible: false, // 上传素材对话框,默认不显示
+      uploadHeaders: {
+        Authorization: `Bearer ${user.token}`
+      }
     }
   },
   created () {
@@ -53,9 +72,16 @@ export default {
         this.images = res.data.data.results
       })
     },
+    // 全部和收藏按钮发送改变时
     onCollectChange (value) {
       console.log(value)
       this.loadImages(value)
+    },
+    onUploadSuccess () {
+      // 关闭对话框
+      this.dialogUploadVisible = false
+      // 更新全部素材
+      this.loadImages(false)
     }
   }
 }
