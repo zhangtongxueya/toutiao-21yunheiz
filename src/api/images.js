@@ -12,11 +12,23 @@ export const uploadImage = data => {
   })
 }
 
-// 过去素材列表
+// 获取素材列表
 export const getImages = params => {
   return request({
     method: 'GET',
     url: '/mp/v1_0/user/images',
     params
+  })
+}
+
+// 是否收藏素材
+// 参数1: 指定项图片的id , 参数2: 收藏的状态
+export const collectImage = (imageId, collect) => {
+  return request({
+    method: 'PUT',
+    url: `/mp/v1_0/user/images/${imageId}`,
+    data: {
+      collect
+    }
   })
 }

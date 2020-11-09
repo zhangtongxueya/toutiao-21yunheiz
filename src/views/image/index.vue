@@ -22,7 +22,11 @@
           <!-- 删除和收藏 -->
           <div class="image-active">
             <!-- 收藏 -->
-            <i class="el-icon-star-on"></i>
+            <i :class="{
+              'el-icon-star-on': item.is_collected,
+              'el-icon-star-off': !item.is_collected
+              }" @click="onCollected(item)">
+            </i>
             <!-- 删除 -->
             <i class="el-icon-delete-solid"></i>
           </div>
@@ -52,7 +56,8 @@
 <script>
 // 获取素材列表
 import {
-  getImages
+  getImages,
+  collectImage
 } from '@/api/images'
 
 export default {
@@ -85,7 +90,7 @@ export default {
         page, // 当前页
         per_page: this.pageSize // 每页的条数
       }).then(res => {
-        console.log(res)
+        // console.log(res)
         this.images = res.data.data.results // 获取出来的素材
         this.totalCount = res.data.data.total_count // 获取出来的条数
       })
@@ -109,6 +114,24 @@ export default {
     onPageChange (page) {
       // console.log(page);
       this.loadImages(page)
+    },
+    onCollected (item) {
+      // console.log(item);
+      // collectImage(item.id, !item.is_collected).then(res => {
+      //   // console.log(res);
+      //   item.is_collected = !item.is_collected;
+      // });
+      if (item.is_collected) {
+        // 如果已收藏,则取消收藏
+        collectImage(item.id, false).then(res => {
+          item.is_collected = false
+        })
+      } else {
+        // 如果没有收藏,则添加收藏
+        collectImage(item.id, true).then(res => {
+          item.is_collected = true
+        })
+      }
     }
   }
 }
