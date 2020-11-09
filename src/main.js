@@ -10,7 +10,17 @@ import 'element-ui/lib/theme-chalk/index.css'
 // 加载全局样式组件
 import './styles/index.less'
 
+import { ElementTiptapPlugin } from 'element-tiptap'
+// import element-tiptap 样式
+import 'element-tiptap/lib/index.css'
+
 Vue.use(ElementUI)
+Vue.use(ElementTiptapPlugin, {
+  lang: 'zh' // 语言设置
+})
+// 现在你已经在全局注册了 `el-tiptap` 组件  就可以在全局组件中使用了
+
+Vue.use(ElementTiptapPlugin)
 
 Vue.config.productionTip = false
 

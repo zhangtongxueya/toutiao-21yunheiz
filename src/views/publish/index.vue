@@ -13,7 +13,8 @@
           <el-input v-model="article.title"></el-input>
         </el-form-item>
         <el-form-item label="内容">
-          <el-input type="textarea" v-model="article.content"></el-input>
+          <!-- <el-input type="textarea" v-model="article.content"></el-input> -->
+          <el-tiptap v-model="article.content" :extensions="extensions" height="300" placeholder="请输入文章内容"></el-tiptap>
         </el-form-item>
         <el-form-item label="封面">
           <el-radio-group v-model="article.cover.type">
@@ -39,7 +40,7 @@
 </template>
 
 <script>
-// 获取文章频道的数据
+// 获取文的数据
 import {
   getArticleChannels,
   addArticle,
@@ -47,8 +48,32 @@ import {
   updateArticle
 } from '@/api/article'
 
+import {
+  // 需要的 extensions
+  Doc,
+  Text,
+  Paragraph,
+  Heading,
+  Bold,
+  Image,
+  Underline,
+  Italic,
+  Strike,
+  ListItem,
+  BulletList,
+  OrderedList,
+  TodoItem,
+  TodoList, // (与 TodoItem 一起使用)
+  HorizontalRule, // 分割线
+  Fullscreen, // 全屏
+  CodeBlock, // 代码块
+  TextColor // 文字颜色
+} from 'element-tiptap'
+
 export default {
   name: 'PublishIndex',
+  // 把副文本编辑器挂载到 components
+
   data () {
     return {
       // 从后台获取到的文章频道的数据
@@ -62,9 +87,37 @@ export default {
           images: [] // 封面图片的地址
         },
         channel_id: null
-      }
+      },
+      extensions: [
+        new Doc(),
+        new Text(),
+        new Paragraph(),
+        new Heading({ // 标题
+          level: 5
+        }),
+        new Bold({ //
+          bubble: true
+        }), // 在气泡菜单中渲染菜单按钮
+        new Underline({ // 下划线
+          bubble: true,
+          menubar: false
+        }), // 在气泡菜单而不在菜单栏中渲染菜单按钮
+        new Italic(), // 斜体
+        new Strike(), // 删除线
+        new Image(), // 图片
+        new ListItem(),
+        new BulletList(), // 无序列表
+        new OrderedList(), // 有序列表
+        new TodoItem(),
+        new TodoList(), // 任务框
+        new HorizontalRule(), // 分割线
+        new Fullscreen(), // 全屏
+        new CodeBlock(), // 代码块
+        new TextColor() // 文字颜色
+      ]
     }
   },
+
   created () {
     // 页面初始化，获取文章频道数据
     this.loadChannels()
