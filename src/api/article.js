@@ -1,5 +1,5 @@
 // 文章相关的请求模块
-import request from '@/utils/requert'
+import request from '@/utils/request'
 
 // 获取文章列表(文章数据)
 export const getArticle = params => {

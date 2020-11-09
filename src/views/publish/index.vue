@@ -14,7 +14,7 @@
         </el-form-item>
         <el-form-item label="内容">
           <!-- <el-input type="textarea" v-model="article.content"></el-input> -->
-          <el-tiptap v-model="article.content" :extensions="extensions" height="300" placeholder="请输入文章内容"></el-tiptap>
+          <el-tiptap v-model="article.content" :extensions="extensions" height="400" placeholder="请输入文章内容"></el-tiptap>
         </el-form-item>
         <el-form-item label="封面">
           <el-radio-group v-model="article.cover.type">
@@ -70,6 +70,11 @@ import {
   TextColor // 文字颜色
 } from 'element-tiptap'
 
+// 上传图片的请求
+import {
+  uploadImage
+} from '@/api/images'
+
 export default {
   name: 'PublishIndex',
   // 把副文本编辑器挂载到 components
@@ -104,7 +109,20 @@ export default {
         }), // 在气泡菜单而不在菜单栏中渲染菜单按钮
         new Italic(), // 斜体
         new Strike(), // 删除线
-        new Image(), // 图片
+        new Image({
+          // 默认把图片生成 base64,字符串和内容存储在一起,如果需要自定义上传图片
+          uploadRequest (file) {
+            // 如果接口要求 Content-Type 是 multipart/form-data,则请求体必须使用 FormData 对象
+            const fd = new FormData()
+            fd.append('image', file)
+            // 第一个 return 是返回 Promise 对象
+            return uploadImage(fd).then(res => {
+              // 返回图片的地址
+              // 这个 return 是返回最后结果
+              return res.data.data.url
+            })
+          }
+        }), // 图片
         new ListItem(),
         new BulletList(), // 无序列表
         new OrderedList(), // 有序列表

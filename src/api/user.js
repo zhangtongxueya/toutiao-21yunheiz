@@ -1,5 +1,5 @@
 // 引入 axios
-import request from '@/utils/requert'
+import request from '@/utils/request'
 
 /* 用户相关请求模块 */
 // 用户登录函数
