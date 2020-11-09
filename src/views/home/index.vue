@@ -4,10 +4,11 @@
 
 <script>
 export default {
-  name: 'homeIndex',
+  name: 'HomeIndex',
   data () {
     return {}
   }
 }
+
 </script>
 <style scoped></style>

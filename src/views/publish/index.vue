@@ -8,11 +8,11 @@
           <el-breadcrumb-item>{{$route.query.id ? '修改文章' : '发布文章'}}</el-breadcrumb-item>
         </el-breadcrumb>
       </div>
-      <el-form ref="form" :model="article" label-width="40px">
-        <el-form-item label="标题">
+      <el-form :model="article" :rules="formRules" label-width="60px" ref="publish-form">
+        <el-form-item label="标题" prop="title">
           <el-input v-model="article.title"></el-input>
         </el-form-item>
-        <el-form-item label="内容">
+        <el-form-item label="内容" prop="content">
           <!-- <el-input type="textarea" v-model="article.content"></el-input> -->
           <el-tiptap v-model="article.content" :extensions="extensions" height="400" placeholder="请输入文章内容"></el-tiptap>
         </el-form-item>
@@ -24,7 +24,7 @@
             <el-radio :label="-1">自动</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="频道">
+        <el-form-item label="频道" prop="channel_id">
           <el-select v-model="article.channel_id" placeholder="请选择频道">
             <el-option v-for="(item, id) in channels" :key="id" :label="item.name" :value="id">
             </el-option>
@@ -132,7 +132,43 @@ export default {
         new Fullscreen(), // 全屏
         new CodeBlock(), // 代码块
         new TextColor() // 文字颜色
-      ]
+      ],
+      // form 表单的验证规则
+      formRules: {
+        // 标题的验证规则
+        title: [{
+          required: true,
+          message: '请输入文章标题',
+          trigger: 'blur'
+        },
+        {
+          min: 5,
+          max: 30,
+          message: '长度在 5 到 30 个字符',
+          trigger: 'blur'
+        }
+        ],
+        // 内容的验证规则
+        content: [{
+          validator (rule, value, callback) {
+            console.log('hhhhhh')
+            if (value === '<p></p>') {
+              callback(new Error('请输入文章内容'))
+            } else {
+              callback()
+            }
+          }
+        }, {
+          required: true,
+          message: '请输入文章内容',
+          trigger: 'blur'
+        }],
+        // 频道的验证规则
+        channel_id: [{
+          required: true,
+          message: '请选择文章频道'
+        }]
+      }
     }
   },
 
@@ -160,25 +196,33 @@ export default {
     // 文章发表请求(和修改公用一个组件)
     // 判断是否 是修改文章,则执行修改操作;否则执行发布操作
     onPublish (draft = false) {
-      if (this.$route.query.id) {
-        updateArticle(this.$route.query.id, this.article, draft).then(res => {
-          console.log(res)
-          this.$message({
-            message: `${draft ? '存入草稿' : '发布'}成功`,
-            type: 'success'
+      // 文章提交之前,表单验证
+      this.$refs['publish-form'].validate(valid => {
+        if (!valid) {
+          // 验证失败
+          return
+        }
+        验证通过
+        if (this.$route.query.id) {
+          updateArticle(this.$route.query.id, this.article, draft).then(res => {
+            console.log(res)
+            this.$message({
+              message: `${draft ? '存入草稿' : '发布'}成功`,
+              type: 'success'
+            })
+            this.$router.push('/article')
           })
-          this.$router.push('/article')
-        })
-      } else {
-        addArticle(this.article, draft).then(res => {
-          console.log(res)
-          this.$message({
-            message: `${draft ? '存入草稿' : '发布'}成功`,
-            type: 'success'
+        } else {
+          addArticle(this.article, draft).then(res => {
+            console.log(res)
+            this.$message({
+              message: `${draft ? '存入草稿' : '发布'}成功`,
+              type: 'success'
+            })
+            this.$router.push('/article')
           })
-          this.$router.push('/article')
-        })
-      }
+        }
+      })
     },
     // 修改文章: 加载文章内容
     loadArticle () {
