@@ -6,58 +6,56 @@
           <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
           <el-breadcrumb-item>素材管理</el-breadcrumb-item>
         </el-breadcrumb>
-        <!-- 上传素材 -->
-        <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
+
       </div>
       <div class="btn">
-        <el-radio-group v-model="radio1" size="mini">
-          <el-radio-button label="全部"></el-radio-button>
-          <el-radio-button label="收藏"></el-radio-button>
+        <el-radio-group v-model="collect" size="mini" @change="onCollectChange">
+          <el-radio-button :label="false">全部</el-radio-button>
+          <el-radio-button :label="true">收藏</el-radio-button>
         </el-radio-group>
+        <!-- 上传素材 -->
+        <el-button size="mini" type="success">操作按钮</el-button>
       </div>
       <el-row :gutter="30">
-        <el-col :xs="12" :sm="6" :md="6" :lg="4" class="list">
-          <el-image style="height: 100px"
-            src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3755647799,1307160739&fm=26&gp=0.jpg"
-            fit="cover"></el-image>
+        <el-col v-for="(item, id) in images" :key="id" :xs="12" :sm="6" :md="6" :lg="4" class="list">
+          <el-image style="height: 100px" :src="item.url" fit="cover"></el-image>
         </el-col>
-        <el-col :xs="12" :sm="6" :md="6" :lg="4" class="list">
-          <el-image style="height: 100px"
-            src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3755647799,1307160739&fm=26&gp=0.jpg"
-            fit="cover"></el-image>
-        </el-col>
-        <el-col :xs="12" :sm="6" :md="6" :lg="4" class="list">
-          <el-image style="height: 100px"
-            src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3755647799,1307160739&fm=26&gp=0.jpg"
-            fit="cover"></el-image>
-        </el-col>
-        <el-col :xs="12" :sm="6" :md="6" :lg="4" class="list">
-          <el-image style="height: 100px"
-            src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3755647799,1307160739&fm=26&gp=0.jpg"
-            fit="cover"></el-image>
-        </el-col>
-        <el-col :xs="12" :sm="6" :md="6" :lg="4" class="list">
-          <el-image style="height: 100px"
-            src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3755647799,1307160739&fm=26&gp=0.jpg"
-            fit="cover"></el-image>
-        </el-col>
-        <el-col :xs="12" :sm="6" :md="6" :lg="4" class="list">
-          <el-image style="height: 100px"
-            src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3755647799,1307160739&fm=26&gp=0.jpg"
-            fit="cover"></el-image>
-        </el-col>
-
       </el-row>
     </el-card>
   </div>
 </template>
 
 <script>
+// 获取素材列表
+import {
+  getImages
+} from '@/api/images'
+
 export default {
   name: 'ImageIndex',
   data () {
     return {
-      radio1: '全部'
+      collect: false, // 默认查询全部的素材
+      images: [] // 图片的数据
+    }
+  },
+  created () {
+    // 获取素材列表
+    this.loadImages(false)
+  },
+  methods: {
+    // 获取素材列表
+    loadImages (collect = false) {
+      getImages({
+        collect // false 代表全部, true 代表收藏
+      }).then(res => {
+        // console.log(res);
+        this.images = res.data.data.results
+      })
+    },
+    onCollectChange (value) {
+      console.log(value)
+      this.loadImages(value)
     }
   }
 }
@@ -66,6 +64,8 @@ export default {
 <style scoped lang="less">
   // 按钮内部下边距
   .btn {
+    display: flex;
+    justify-content: space-between;
     padding-bottom: 20px;
   }
 
