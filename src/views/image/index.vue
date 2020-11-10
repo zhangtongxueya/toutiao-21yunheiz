@@ -22,13 +22,20 @@
           <!-- 删除和收藏 -->
           <div class="image-active">
             <!-- 收藏 -->
-            <i :class="{
+            <!-- <i :class="{
               'el-icon-star-on': item.is_collected,
               'el-icon-star-off': !item.is_collected
               }" @click="onCollected(item)">
-            </i>
+            </i> -->
+            <el-button type="warning" :icon="item.is_collected ? 'el-icon-star-on' : 'el-icon-star-off'"
+              :loading="item.loading" circle @click="onCollected(item)" size="mini">
+            </el-button>
+
             <!-- 删除 -->
-            <i class="el-icon-delete-solid"></i>
+            <!-- <i class="el-icon-delete-solid"></i> -->
+            <el-button circle type="danger" size="mini" icon="el-icon-delete" @click="onDelete(item)"
+              :loading=item.loading>
+            </el-button>
           </div>
         </el-col>
       </el-row>
@@ -57,7 +64,8 @@
 // 获取素材列表
 import {
   getImages,
-  collectImage
+  collectImage,
+  deleteImage
 } from '@/api/images'
 
 export default {
@@ -91,7 +99,11 @@ export default {
         per_page: this.pageSize // 每页的条数
       }).then(res => {
         // console.log(res)
-        this.images = res.data.data.results // 获取出来的素材
+        const results = res.data.data.results // 获取出来的素材
+        results.forEach(item => {
+          item.loading = false
+        })
+        this.images = results // 获取出来的素材赋值给
         this.totalCount = res.data.data.total_count // 获取出来的条数
       })
     },
@@ -115,23 +127,35 @@ export default {
       // console.log(page);
       this.loadImages(page)
     },
+    // 点击 收藏按钮
     onCollected (item) {
       // console.log(item);
-      // collectImage(item.id, !item.is_collected).then(res => {
-      //   // console.log(res);
-      //   item.is_collected = !item.is_collected;
-      // });
-      if (item.is_collected) {
-        // 如果已收藏,则取消收藏
-        collectImage(item.id, false).then(res => {
-          item.is_collected = false
-        })
-      } else {
-        // 如果没有收藏,则添加收藏
-        collectImage(item.id, true).then(res => {
-          item.is_collected = true
-        })
-      }
+      item.loading = true
+      collectImage(item.id, !item.is_collected).then(res => {
+        // console.log(res);
+        item.is_collected = !item.is_collected
+        item.loading = false
+      })
+
+      // if (item.is_collected) {
+      //   // 如果已收藏,则取消收藏
+      //   collectImage(item.id, false).then(res => {
+      //     item.is_collected = false
+      //   })
+      // } else {
+      //   // 如果没有收藏,则添加收藏
+      //   collectImage(item.id, true).then(res => {
+      //     item.is_collected = true
+      //   })
+      // }
+    },
+    // 删除素材
+    onDelete (item) {
+      item.loading = true
+      deleteImage(item.id).then(res => {
+        this.loadImages()
+        item.loading = false
+      })
     }
   }
 }
