@@ -32,18 +32,18 @@
 </template>
 
 <script>
-export default {
-  name: 'AppAside',
-  props: ['is-collapse'],
-  data () {
-    return {
-      // isCollapse: true  使用的是父子间传递过来的数据，这里的就没有意义了
-    }
-  },
-  methods: {
+  export default {
+    name: 'AppAside',
+    props: ['is-collapse'],
+    data() {
+      return {
+        // isCollapse: true  使用的是父子间传递过来的数据，这里的就没有意义了
+      }
+    },
+    methods: {
 
+    }
   }
-}
 
 </script>
 <style scoped lang="less">
