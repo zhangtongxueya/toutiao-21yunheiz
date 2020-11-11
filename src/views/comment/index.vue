@@ -35,64 +35,64 @@
 </template>
 
 <script>
-  // 文章评论的请求(和文章内容是一个)
-  import {
-    getArticle,
-    updateCommentStatus
-  } from '@/api/article'
+// 文章评论的请求(和文章内容是一个)
+import {
+  getArticle,
+  updateCommentStatus
+} from '@/api/article'
 
-  export default {
-    name: 'CommentIndex',
-    data() {
-      return {
-        articles: [], // 存储评论的数据
-        totalCount: 0, // 评论的总条数
-        pageSize: 10, // 每页的条数
-        page: 1, // 当前页
-      }
-    },
-    created() {
-      // 页面初始化,请求文章评论
+export default {
+  name: 'CommentIndex',
+  data () {
+    return {
+      articles: [], // 存储评论的数据
+      totalCount: 0, // 评论的总条数
+      pageSize: 10, // 每页的条数
+      page: 1 // 当前页
+    }
+  },
+  created () {
+    // 页面初始化,请求文章评论
+    this.loadArticle()
+  },
+  methods: {
+    // 每页显示的条数改变后触发
+    handleSizeChange () {
       this.loadArticle()
     },
-    methods: {
-      // 每页显示的条数改变后触发
-      handleSizeChange() {
-        this.loadArticle();
-      },
-      handleCurrentChange(page) {
-        this.loadArticle(page);
-      },
-      // 获取文章评论
-      loadArticle(page = 1) {
-        this.page = page;
-        getArticle({
-          response_type: 'comment',
-          page,
-          per_page: this.pageSize
-        }).then(res => {
-          const results = res.data.data.results;
-          results.forEach(article => {
-            article.statusDisabled = false;
-          })
-          this.articles = results;
-          this.totalCount = res.data.data.total_count; //总条数
+    handleCurrentChange (page) {
+      this.loadArticle(page)
+    },
+    // 获取文章评论
+    loadArticle (page = 1) {
+      this.page = page
+      getArticle({
+        response_type: 'comment',
+        page,
+        per_page: this.pageSize
+      }).then(res => {
+        const results = res.data.data.results
+        results.forEach(article => {
+          article.statusDisabled = false
         })
-      },
-      // 请求 是否允许评论的接口
-      onStatusChange(article) {
-        article.statusDisabled = true;
-        updateCommentStatus(article.id.toString(), article.comment_status).then(res => {
-          // console.log(res);
-          article.statusDisabled = false;
-          this.$message({
-            message: article.comment_status ? '文章评论开启' : '文章评论关闭',
-            type: 'success'
-          });
+        this.articles = results
+        this.totalCount = res.data.data.total_count // 总条数
+      })
+    },
+    // 请求 是否允许评论的接口
+    onStatusChange (article) {
+      article.statusDisabled = true
+      updateCommentStatus(article.id.toString(), article.comment_status).then(res => {
+        // console.log(res);
+        article.statusDisabled = false
+        this.$message({
+          message: article.comment_status ? '文章评论开启' : '文章评论关闭',
+          type: 'success'
         })
-      }
+      })
     }
   }
+}
 
 </script>
 <style scoped lang="less">

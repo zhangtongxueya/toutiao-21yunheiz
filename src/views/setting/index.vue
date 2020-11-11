@@ -32,6 +32,7 @@
         </el-col>
         <el-col :span="4" :offset="3">
           <label for="file">
+            <!-- 头像 -->
             <el-avatar shape="square" :size="150" fit="cover" :src="user.photo"></el-avatar>
             <p>点击修改头像</p>
           </label>
@@ -41,84 +42,126 @@
       </el-row>
     </el-card>
     <!-- 预览层 -->
-    <el-dialog append-to-body title="修改头像" :visible.sync="dialogVisible" @opened="onDialogOpend">
+    <el-dialog append-to-body title="修改头像" :visible.sync="dialogVisible" @opened="onDialogOpend"
+      @closed="onDialogClosed">
       <div class="perview-image-warp">
         <img class="perview-image" :src="perviewsImage" ref="perview-image" alt="">
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" :loading="updateLoading" @click="onUploadPhoto">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-  // 用户信息的接口
-  import {
-    getUserProfile
-  } from '@/api/user'
+// 用户信息的接口
+import {
+  getUserProfile,
+  updateUserPhoto
+} from '@/api/user'
 
-  import 'cropperjs/dist/cropper.css';
-  import Cropper from 'cropperjs';
+import 'cropperjs/dist/cropper.css'
+import Cropper from 'cropperjs'
 
-  export default {
-    name: 'SettingIndex',
-    data() {
-      return {
-        user: {
-          email: '',
-          id: null,
-          intro: '',
-          mobile: '',
-          name: '',
-          photo: '',
-        },
-        dialogVisible: false, // 控制上传图片后,裁剪层的显示或隐藏
-        perviewsImage: '', // 上传的要预览的图片
-      }
+export default {
+  name: 'SettingIndex',
+  data () {
+    return {
+      user: {
+        email: '',
+        id: null,
+        intro: '',
+        mobile: '',
+        name: '',
+        photo: ''
+      },
+      dialogVisible: false, // 控制上传图片后,裁剪层的显示或隐藏
+      perviewsImage: '', // 上传的要预览的图片
+      cropper: null, // 裁切器
+      updateLoading: false // 上传头像时的loading 状态
+    }
+  },
+  created () {
+    this.loadUser()
+  },
+  methods: {
+    // 获取用户信息
+    loadUser () {
+      getUserProfile().then(res => {
+        // console.log(res);
+        this.user = res.data.data
+      })
     },
-    created() {
-      this.loadUser();
+    onFileChange () {
+      // 预览层的显示或隐藏
+      this.dialogVisible = true
+      // 处理要预览的图片
+      const file = this.$refs.file
+      // console.log(file.files[0]); file.files[0]---就是上传的图片
+      const seeImage = window.URL.createObjectURL(file.files[0])
+      this.perviewsImage = seeImage
+
+      // 修改上传相同一张图片,只触发一次
+      this.$refs.file.value = ''
+      // console.log('hello');
     },
-    methods: {
-      // 获取用户信息
-      loadUser() {
-        getUserProfile().then(res => {
+    onDialogOpend () {
+      // 图片裁切器必须基于 img 进行初始化
+      // 注意: img 必须是可见状态才能够完成初始化
+      //       因为这里要在对话框里面进行初始化
+      // 所以要在 弹出框完全弹出(弹出动画结束) 的状态去初始化---然后获取 DOM 节点
+      const image = this.$refs['perview-image']
+      // 第一次初始化完成以后,如果裁剪的图片发生了改变,裁切器默认不会更新
+      // 如果需要裁剪 新的图片,需要更新裁切器
+      //    方式一: 裁切器.replace 方法
+      //    方式而: 销毁裁切器,重新初始化 destroy
+      this.cropper = new Cropper(image, {
+        viewMode: 1, // 裁切框的比例
+        dragMode: 'none', // 画布不允许移动
+        AspectRatio: 1 // 裁切框固定的比例
+
+        // 移动裁切器的时候会触发 crop 方法,这里不需要
+        // crop(event) {
+        //   console.log(event.detail.x)
+        //   console.log(event.detail.y)
+        //   console.log(event.detail.width)
+        //   console.log(event.detail.height)
+        //   console.log(event.detail.rotate)
+        //   console.log(event.detail.scaleX)
+        //   console.log(event.detail.scaleY)
+        // }
+      })
+    },
+    onDialogClosed () {
+      // 弹出层动画完全关闭时销毁裁切器
+      this.cropper.destroy()
+    },
+    // 点击确定上传裁切好的用户头像
+    onUploadPhoto () {
+      this.updateLoading = true
+      this.cropper.getCroppedCanvas().toBlob(blob => {
+        // console.log(blob);
+        const fd = new FormData()
+        fd.append('photo', blob)
+        // 请求更新用户头像的接口
+        updateUserPhoto(fd).then(res => {
           // console.log(res);
-          this.user = res.data.data
-        })
-      },
-      onFileChange() {
-        // 预览层的显示或隐藏
-        this.dialogVisible = true;
-        // 处理要预览的图片
-        const file = this.$refs.file;
-        // console.log(file.files[0]); file.files[0]---就是上传的图片
-        const seeImage = window.URL.createObjectURL(file.files[0]);
-        this.perviewsImage = seeImage;
+          // 关闭弹出层
+          this.dialogVisible = false
+          // 更新个人信息中的头像
+          this.user.photo = window.URL.createObjectURL(blob)
 
-        // 修改上传相同一张图片,只触发一次
-        this.$refs.file.value = '';
-        // console.log('hello');
-      },
-      onDialogOpend() {
-        const image = this.$refs['perview-image'];
-        const cropper = new Cropper(image, {
-          aspectRatio: 16 / 9,
-          crop(event) {
-            console.log(event.detail.x);
-            console.log(event.detail.y);
-            console.log(event.detail.width);
-            console.log(event.detail.height);
-            console.log(event.detail.rotate);
-            console.log(event.detail.scaleX);
-            console.log(event.detail.scaleY);
-          },
-        });
-      }
-    },
+          this.updateLoading = false
+
+          // 把服务端返回的图片进行展示有点慢
+          // this.user.photo = res.data.data.photo;
+        })
+      })
+    }
   }
+}
 
 </script>
 <style scoped lang="less">

@@ -1,66 +1,66 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
+import Vue from 'vue'
+import VueRouter from 'vue-router'
 // @ 代表的是当前项目的 src 目录
-import Login from "@/views/login";
-import Layout from "@/views/layout";
-import Home from "@/views/home";
-import Article from "@/views/article";
-import Publish from "@/views/publish";
-import Image from "@/views/image";
-import Comment from "@/views/comment";
-import Setting from "@/views/setting";
+import Login from '@/views/login'
+import Layout from '@/views/layout'
+import Home from '@/views/home'
+import Article from '@/views/article'
+import Publish from '@/views/publish'
+import Image from '@/views/image'
+import Comment from '@/views/comment'
+import Setting from '@/views/setting'
 
-Vue.use(VueRouter);
+Vue.use(VueRouter)
 
 // 路由配置
 const routes = [
   {
-    path: "/login",
-    name: "login",
+    path: '/login',
+    name: 'login',
     component: Login
   },
   // 嵌套路由的父路由不需要写名字
   {
-    path: "/",
+    path: '/',
     component: Layout,
     children: [
       {
-        path: "",
-        name: "home",
+        path: '',
+        name: 'home',
         component: Home
       },
       {
-        path: "/article",
-        name: "article",
+        path: '/article',
+        name: 'article',
         component: Article
       },
       {
-        path: "/image",
-        name: "image",
+        path: '/image',
+        name: 'image',
         component: Image
       },
       {
-        path: "/publish",
-        name: "publish",
+        path: '/publish',
+        name: 'publish',
         component: Publish
       },
       {
-        path: "/comment",
-        name: "comment",
+        path: '/comment',
+        name: 'comment',
         component: Comment
       },
       {
-        path: "/setting",
-        name: "setting",
+        path: '/setting',
+        name: 'setting',
         component: Setting
       }
     ]
   }
-];
+]
 
 const router = new VueRouter({
   routes
-});
+})
 
 // 导航守卫/路由拦截器：说白了所有页面的导航都会经过这里
 // 守卫页面导航的
@@ -73,20 +73,20 @@ router.beforeEach((to, from, next) => {
   // 如果登录了，则允许通过
 
   // 判断用户有没有登录
-  const user = JSON.parse(window.localStorage.getItem("user"));
+  const user = JSON.parse(window.localStorage.getItem('user'))
 
-  if (to.path !== "/login") {
+  if (to.path !== '/login') {
     // to.path 代表的是要去的导航地址
     if (user) {
       // 已登录，允许通过
-      next();
+      next()
     } else {
       // 没有登录，跳转登录页面
-      next("/login");
+      next('/login')
     }
   } else {
-    next();
+    next()
   }
-});
+})
 
-export default router;
+export default router
