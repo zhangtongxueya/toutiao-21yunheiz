@@ -1,5 +1,6 @@
 <template>
-  <el-menu default-active="/" class="menu" text-color="#fff" active-text-color="#ffd04b" :collapse="isCollapse" router>
+  <el-menu :default-active="$route.path" class="menu" text-color="#fff" active-text-color="#ffd04b"
+    :collapse="isCollapse" router>
     <el-menu-item index="/">
       <i class="el-icon-setting"></i>
       <span slot="title">首页</span>
@@ -20,11 +21,11 @@
       <i class="el-icon-setting"></i>
       <span slot="title">评论管理</span>
     </el-menu-item>
-    <el-menu-item index="fans">
+    <el-menu-item index="/fans">
       <i class="el-icon-setting"></i>
       <span slot="title">粉丝管理</span>
     </el-menu-item>
-    <el-menu-item index="setting">
+    <el-menu-item index="/setting">
       <i class="el-icon-setting"></i>
       <span slot="title">个人设置</span>
     </el-menu-item>
@@ -32,18 +33,18 @@
 </template>
 
 <script>
-  export default {
-    name: 'AppAside',
-    props: ['is-collapse'],
-    data() {
-      return {
-        // isCollapse: true  使用的是父子间传递过来的数据，这里的就没有意义了
-      }
-    },
-    methods: {
-
+export default {
+  name: 'AppAside',
+  props: ['is-collapse'],
+  data () {
+    return {
+      // isCollapse: true  使用的是父子间传递过来的数据，这里的就没有意义了
     }
+  },
+  methods: {
+
   }
+}
 
 </script>
 <style scoped lang="less">

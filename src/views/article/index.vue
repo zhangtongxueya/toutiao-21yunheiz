@@ -87,10 +87,9 @@
           <!-- 如果需要自定义模板,那么就把自定义的内容放到 template 中 -->
           <template slot-scope="scope">
             <el-button size="mini" type="primary" circle icon="el-icon-edit"
-              @click="$router.push('/publish?id='+scope.row.id)">
+              @click="$router.push('/publish?id='+scope.row.id.toString())">
             </el-button>
-            <el-button size="mini" type="danger" circle icon="el-icon-delete"
-              @click="onDeleteArticle(scope.row.id.toString())">
+            <el-button size="mini" type="danger" circle icon="el-icon-delete" @click="onDeleteArticle(scope.row.id)">
             </el-button>
           </template>
         </el-table-column>
@@ -210,8 +209,8 @@ export default {
     },
     // 删除文章
     onDeleteArticle (id) {
-      console.log(id)
-      console.log(id.toString())
+      // console.log(id)
+      // console.log(id.toString());
       this.$confirm('确定删除吗?', '删除退出', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

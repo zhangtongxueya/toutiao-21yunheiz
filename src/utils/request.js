@@ -1,5 +1,6 @@
 // 请求模块
 import axios from 'axios'
+import router from '@/router'
 import JSONbig from 'json-bigint'
 // 创建一个 axios 实例,通过这个实例来发请求,把需要的配置给这个实例
 const request = axios.create({
@@ -43,6 +44,28 @@ request.interceptors.request.use(
   },
   // 请求失败会进入这里
   function (error) {
+    return Promise.reject(error)
+  }
+)
+
+// 响应拦截器
+request.interceptors.response.use(
+  function (response) {
+    // 所有响应码为 2xx 的响应都经过这里
+
+    // response 是响应结果； 注意：一定要把 response 返回，否则发请求的位置拿不到数据
+    return response
+  },
+  function (error) {
+    // 任何超出 2xx 的响应码都会进入这里
+    // console.log("cuowu");
+    console.dir(error)
+    if (error.response && error.response.status === 401) {
+      // 跳转到登录页面
+      router.push('/login')
+      // 清除本地存储的用户登录状态
+      window.localStorage.removeItem('user')
+    }
     return Promise.reject(error)
   }
 )

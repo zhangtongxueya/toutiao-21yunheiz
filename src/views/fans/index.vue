@@ -3,12 +3,12 @@
 </template>
 
 <script>
-  export default {
-    name: 'FansIndex',
-    data() {
-      return {}
-    }
+export default {
+  name: 'FansIndex',
+  data () {
+    return {}
   }
+}
 
 </script>
 <style scoped>

@@ -41,63 +41,63 @@
 </template>
 
 <script>
-  import AppAside from './components/aside'
-  import {
-    getUserProfile
-  } from '@/api/user'
+import AppAside from './components/aside'
+import {
+  getUserProfile
+} from '@/api/user'
 
-  // 引入 事件总线
-  import globalBus from '@/utils/globabus'
+// 引入 事件总线
+import globalBus from '@/utils/globabus'
 
-  export default {
-    data() {
-      return {
-        user: {},
-        isCollapse: false // 子组件中侧边菜单栏的展开和收起
-      }
-    },
-    components: {
-      AppAside
-    },
-    created() {
-      // 组件初始完成，请求获取用户资料
-      this.loadUserProfile();
+export default {
+  data () {
+    return {
+      user: {},
+      isCollapse: false // 子组件中侧边菜单栏的展开和收起
+    }
+  },
+  components: {
+    AppAside
+  },
+  created () {
+    // 组件初始完成，请求获取用户资料
+    this.loadUserProfile()
 
-      // 注册-更新顶部菜单栏的用户信息
-      globalBus.$on('update-user', data => {
-        this.user.name = data.name;
-        this.user.photo = data.photo;
+    // 注册-更新顶部菜单栏的用户信息
+    globalBus.$on('update-user', data => {
+      this.user.name = data.name
+      this.user.photo = data.photo
+    })
+  },
+  methods: {
+    // 除了登录接口，其他接口需要提供身份才能获取数据
+    // 后端要求把需要授权的用户身份放到请求头中
+    // axios 可以通过 header 选项设置请求头 (api/user) 中
+    loadUserProfile () {
+      getUserProfile().then(res => {
+        this.user = res.data.data
       })
     },
-    methods: {
-      // 除了登录接口，其他接口需要提供身份才能获取数据
-      // 后端要求把需要授权的用户身份放到请求头中
-      // axios 可以通过 header 选项设置请求头 (api/user) 中
-      loadUserProfile() {
-        getUserProfile().then(res => {
-          this.user = res.data.data
+    // 用户退出功能实现
+    onLogout () {
+      this.$confirm('确定退出登录吗?', '提示退出', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 把用户的登录状态清除
+        window.localStorage.removeItem('user')
+        // 跳转login 页面
+        this.$router.push('/login')
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消退出'
         })
-      },
-      // 用户退出功能实现
-      onLogout() {
-        this.$confirm('确定退出登录吗?', '提示退出', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          // 把用户的登录状态清除
-          window.localStorage.removeItem('user')
-          // 跳转login 页面
-          this.$router.push('/login')
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消退出'
-          })
-        })
-      }
+      })
     }
   }
+}
 
 </script>
 <style scoped lang="less">
